@@ -26,6 +26,7 @@ struct push_back_state_and_time
 
     void operator()(const state_type &x , double t)
     {
+    	//std::cout << t << '\t' << x(0,0) << '\t' << x(1,0) << '\n';
         m_states.push_back(x);
         m_times.push_back(t);
     }
@@ -37,19 +38,19 @@ void Pnet::Gillespie(int n) {
 	int j;
 	for (int i = 0; i < n; ++i) {
 		t = t + dt(mtgen);
-		chance = uni(mtgen)*H->H0;
+		chance = uni(mtgen)*H.H0;
 		j = 0;
-		tsum  = H->H(j,0);
-		std::cout << H->H << '\t' << H->H0 << std::endl;
+		tsum  = H.H(j,0);
+		//std::cout << H->H << '\t' << H->H0 << std::endl;
 		while (tsum < chance) {
 			++j;
-			tsum += H->H(j,0);
+			tsum += H.H(j,0);
 		}
 		UpdateM(j);
 		std::cout << t << '\t' << M << std::endl;
 
 		/// prep random number generators for next round
-		dt.param(H->H0);
+		dt.param(H.H0);
 	}
 }
 
@@ -63,7 +64,7 @@ void Pnet::Gillespie(int n) {
 
 void Pnet::UpdateM(int i) {
 	M = M + project(S, range(0,M.size1()), range(i,i+1)); //column(S, i);
-	H->Update(M);
+	H.Update(M);
 }
 
 void Pnet::Deterministic() {
@@ -76,13 +77,14 @@ void Pnet::Deterministic() {
 	//typedef controlled_runge_kutta< error_stepper_type > controlled_stepper_type;
 	//controlled_stepper_type controlled_stepper;
 	//std::size_t steps = integrate_adaptive(controlled_stepper , *H, Mstd, 0.0, 1000.0, 0.00000001, push_back_state_and_time(x_vec, times));
+
 	///convenience function integration
-	std::size_t steps = integrate( *H , M , 0.0 , 10.0 , .0000001, push_back_state_and_time(x_vec, times) );
-	//std::cout << t << '\t' << x_vec << std::endl;
+	std::size_t steps = integrate( H , M , 0.0 , .1 , .0000001, push_back_state_and_time(x_vec, times) );
+	///std::cout << t << '\t' << x_vec << std::endl;
 
 	///constant step integration
-//	runge_kutta4< matrix<double> > stepper;
-//	std::size_t steps = integrate_const(stepper , *H, M, 0.0, .001, 0.000000001, push_back_state_and_time(x_vec, times));
+//	runge_kutta4< state_type > stepper;
+//	std::size_t steps = integrate_const(stepper , *H, M, 0.0, 1, 0.00001, push_back_state_and_time(x_vec, times));
 
 	for( std::size_t i=0; i<=steps; i++ )
 	{

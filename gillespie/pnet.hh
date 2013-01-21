@@ -33,12 +33,12 @@ public:
 		Post(),
 		M(),
 		c(),
-		H(NULL),
+		H(),
 		t(0),
 		A(),
 		S(),
 		mtgen(time(NULL)),
-		dt(H->H0),
+		dt(H.H0),
 		uni(0, 1) {}
 
 	/// empty, correctly dimension instance
@@ -49,28 +49,28 @@ public:
 		Post(v, u),
 		M(u,1),
 		c(v,1),
-		H(NULL),
+		H(u, v),
 		t(0),
 		A(v, u),
 		S(u, v),
 		mtgen(time(NULL)),
-		dt(H->H0),
+		dt(H.H0),
 		uni(0, 1) {}
 
 	/// initialized from premade matrices
-	Pnet(matrix<std::string> Pi, matrix<std::string> Ti, matrix<int> Prei, matrix<int> Posti, state_type Mi, state_type ci, Hazard* Hi):
+	Pnet(matrix<std::string> Pi, matrix<std::string> Ti, matrix<int> Prei, matrix<int> Posti, state_type Mi, state_type ci):
 		P(Pi),
 		T(Ti),
 		Pre(Prei),
 		Post(Posti),
 		M(Mi),
 		c(ci),
-		H(Hi),
+		H(Hazard(Pre, Post, M, c)),
 		t(0),
 		A(InitA()),
 		S(InitS()),
 		mtgen(time(NULL)),
-		dt(H->H0),
+		dt(H.H0),
 		uni(0, 1) {}
 
 	/// variables
@@ -102,7 +102,7 @@ public:
 	matrix<int> S;
 
 	/// pointer to hazard matrix object
-	Hazard * H;
+	Hazard H;
 
 	/// mersenne twister. used to seed other random distributions
 	boost::random::mt19937 mtgen;

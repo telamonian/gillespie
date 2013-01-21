@@ -22,9 +22,7 @@ void Hazard::Update(state_type M) {
 	static const matrix<double> summer (scalar_matrix<double> (1, H.size1(), 1));
 	for (int i = 0; i<Hfunc.size1(); ++i) {
 		//std::cout << i << "\t" << H << "\t"  << Hfunc.size1() << "\t" << Hfunc.size2() << std::endl;
-		std::cout << "pop H" << std::endl;
 		H(i,0) = Hfunc(i,0)(M);
-		std::cout << "push H" << std::endl;
 	}
 	H0 = std::abs(prod(summer, H)(0,0));
 }
@@ -46,21 +44,19 @@ matrix<std::function<double(matrix<double>)>> Hazard::InitHfunc() {
 	for (matrix<int>::const_iterator1 it1 = Pre.begin1(); it1!=Pre.end1(); ++it1) {
 		c_coeff = std::accumulate(it1.begin(), it1.end(), 1.0, [] (double c, int s) {
 			if (s > 1) {
-				for (int x: boost::irange(2, s+1))
+				for (int x: boost::irange(2, s+1)) {
 					c *= x;
-				return c;
+				}
 			}
+			return c;
 		});
-		hfunc(it1.index1(), 0) = [=, this, &c_coeff, &rl] (state_type M) {
-			static double c = (this->c)((int)it1.index1(), 0)*(1/c_coeff);
+		hfunc(it1.index1(), 0) = [=, this, &rl] (state_type M) {
+			double c = (this->c)(it1.index1(), 0)*(1.0/c_coeff);
 			rl = 1;
 			for (matrix<int>::const_iterator2 it2 = it1.begin(); it2!=it1.end(); ++it2) {
 				if (*it2 > 0) {
 					boost::integer_range<int> ir = boost::irange(0, *it2);
 					rl *= std::accumulate(ir.begin(), ir.end(), 1,[=, &M] (double rrl, int r) {
-						std::cout << it1.index1() << "\t" << it2.index2() << "\t" << M << std::endl;
-						std::cout << "butter" << std::endl;
-						std::cout << M(it2.index2(), 0) << std::endl;
 						return rrl*(M(it2.index2(), 0) - r);
 					});
 				}

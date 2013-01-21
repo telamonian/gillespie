@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -std=c++0x -c -Wall
+CFLAGS= -std=c++0x -g  -O0 -c -Wall
 
 all: gil
 

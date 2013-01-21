@@ -23,15 +23,23 @@ public:
 	/// constructors
 	/// default
 	Hazard():
+		Pre(),
+		Post(),
 		c(),
 		H(),
-		H0(0) {}
+		H0(),
+		S(),
+		Hfunc(){}
 
 	/// empty, correctly dimensioned instance
 	Hazard(int u, int v):
+		Pre(u,v),
+		Post(u,v),
 		c(v,1),
 		H(v,1),
-		H0(0) {}
+		H0(0),
+		S(v,u),
+		Hfunc(v, 1) {}
 
 	/// initialized from premade matrices
 	Hazard(matrix<int>Prei, matrix<int> Posti, state_type Mi, state_type ci):
@@ -41,7 +49,7 @@ public:
 		H(ci.size1(), 1),
 		H0(0.0001),
 		S(InitS()),
-		Hfunc(InitHfunc()) {Update(Mi);}
+		Hfunc(InitHfunc()) {}
 
 	const matrix<int> Pre;
 	const matrix<int> Post;
